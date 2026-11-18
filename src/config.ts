@@ -10,6 +10,7 @@ type APIConfig = {
     fileserverHits: number;
     port: string
     platform: string
+    secret: string | undefined
 }
 
 type DBConfig = {
@@ -27,7 +28,8 @@ export const config: Config = {
     api: {
         fileserverHits: 0,
         port: process.env.PORT ?? "",
-        platform: process.env.PLATFORM ?? "dev"
+        platform: process.env.PLATFORM ?? "dev",
+        secret: process.env.SECRET
     },
     db: {
         migrationConfig,
