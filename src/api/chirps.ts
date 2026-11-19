@@ -1,6 +1,8 @@
 import {Request, Response} from 'express'
 import {createChirp, getChirp, getChirps} from "../db/queries/chirps.js";
 import {BadRequestError} from "./error-classes.js";
+import {getBearerToken, validateJWT} from "./auth.js";
+import {config} from "../config.js";
 
 function censorProfanity(body: string) {
     const profaneWords = ["kerfuffle", "sharbert", "fornax"]
@@ -15,12 +17,15 @@ function censorProfanity(body: string) {
 }
 
 export async function createChirpHandler(req: Request, res: Response) {
-    const {body, userId} = req.body
+    const {body} = req.body
     if (body.length >= 139) {
         throw new BadRequestError("Chirp is too long. Max length is 140");
     }
 
     const cleanBody = censorProfanity(body)
+
+    const token = getBearerToken(req)
+    const userId = validateJWT(token)
 
     const newChirp = await createChirp({body: cleanBody, userId})
     res.status(201).send(newChirp)

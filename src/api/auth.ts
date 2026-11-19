@@ -3,6 +3,7 @@ import type {JwtPayload} from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 import {Request} from "express";
 import {BadRequestError, UnauthorizedError} from "./error-classes.js";
+import {config} from "../config.js";
 
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
 
@@ -26,8 +27,13 @@ export function makeJWT(userID: string, expiresIn: number, secret: string): stri
     return jwt.sign(payload, secret)
 }
 
-export function validateJWT(tokenString: string, secret: string): string {
+export function validateJWT(tokenString: string, secret?: string): string {
+    secret = config.api.secret
+    if (!secret) {
+        throw new Error('Secret is missing')
+    }
     const payload = jwt.verify(tokenString, secret) as payload
+
     if (!payload.sub) {
         throw new UnauthorizedError("token is expired")
     }
