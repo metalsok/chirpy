@@ -28,7 +28,7 @@ export function makeJWT(userID: string, expiresIn: number, secret: string): stri
 }
 
 export function validateJWT(tokenString: string, secret?: string): string {
-    secret = config.api.secret
+    secret = secret ?? config.api.secret
     if (!secret) {
         throw new Error('Secret is missing')
     }
@@ -41,7 +41,7 @@ export function validateJWT(tokenString: string, secret?: string): string {
 }
 
 export function extractBearerToken(authorization: string | undefined): string {
-    if (!authorization) {
+    if (!authorization || !authorization.startsWith("Bearer ")) {
         throw new BadRequestError("Auth token is missing")
     }
     return authorization.slice("Bearer ".length)
@@ -49,9 +49,6 @@ export function extractBearerToken(authorization: string | undefined): string {
 
 export function getBearerToken(req: Request): string {
     const {authorization} = req.headers
-    if (!authorization) {
-        throw new BadRequestError("Auth token is missing")
-    }
     return extractBearerToken(authorization)
 }
 
