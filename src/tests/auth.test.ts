@@ -1,6 +1,6 @@
 import {beforeAll, describe, expect, it} from "vitest";
-import {checkPasswordHash, extractBearerToken, hashPassword, makeJWT, validateJWT} from "../api/auth.js";
-import {BadRequestError} from "../api/error-classes.js";
+import {checkPasswordHash, extractApiKey, extractBearerToken, hashPassword, makeJWT, validateJWT} from "../auth.js";
+import {UnauthorizedError} from "../api/error-classes.js";
 
 describe("Password Hashing", () => {
     const password1 = "correctPassword123!";
@@ -33,7 +33,25 @@ describe("Password Hashing", () => {
         expect(extractedToken).toEqual(authToken)
     })
 
-    it("should throw bad request error if auth token undefined", () => {
-        expect(() => extractBearerToken(undefined)).toThrow(BadRequestError)
+    it("should throw unauthorized error if auth token undefined", () => {
+        expect(() => extractBearerToken(undefined)).toThrow(UnauthorizedError)
+    })
+
+    it("should extract an api key", () => {
+        const extractedKey = extractApiKey("ApiKey some-key-value")
+        expect(extractedKey).toEqual("some-key-value")
+    })
+
+    it("should throw unauthorized error if api key header is missing", () => {
+        expect(() => extractApiKey(undefined)).toThrow(UnauthorizedError)
+    })
+
+    it("should throw unauthorized error for a token signed with a different secret", () => {
+        const otherToken = makeJWT("1", "a-different-secret")
+        expect(() => validateJWT(otherToken, "test")).toThrow(UnauthorizedError)
+    })
+
+    it("should throw unauthorized error for a malformed token", () => {
+        expect(() => validateJWT("not-a-real-token", "test")).toThrow(UnauthorizedError)
     })
 });

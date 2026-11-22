@@ -18,7 +18,7 @@ import {createChirpHandler, deleteChirpHandler, getAllChirpsHandler, getChirpHan
 import {refreshTokenHandler, revokeTokenHandler} from "./api/auth.js";
 
 const app = express()
-const port = 8080
+const port = Number(config.api.port) || 8080
 app.use(express.json());
 
 const migrationClient = postgres(config.db.url, {max: 1});

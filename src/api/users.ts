@@ -1,8 +1,17 @@
 import {Request, Response} from 'express'
 import {createUser, getUser, getUsers, setUserRed, updateUser} from "../db/queries/users.js";
-import {checkPasswordHash, getBearerToken, hashPassword, makeJWT, makeRefreshToken, validateJWT} from "./auth.js";
+import {
+    checkPasswordHash,
+    getApiKey,
+    getBearerToken,
+    hashPassword,
+    makeJWT,
+    makeRefreshToken,
+    validateJWT
+} from "../auth.js";
 import {UnauthorizedError} from "./error-classes.js";
 import {createRefreshToken} from "../db/queries/auth.js";
+import {config} from "../config.js";
 // auth.ts, near makeRefreshToken
 const REFRESH_TOKEN_DURATION_MS = 60 * 24 * 60 * 60 * 1000
 
@@ -45,6 +54,10 @@ export const getAllUsersHandler = async (req: Request, res: Response) => {
 }
 export const setChirpyToRed = async (req: Request, res: Response) => {
     console.log(req.body)
+    const apiKey = getApiKey(req)
+    if(config.api.polkaKey !== apiKey){
+        throw new UnauthorizedError("Api key is wrong")
+    }
     const {event, data} = req.body
     if (event !== "user.upgraded") {
         res.status(204).send()

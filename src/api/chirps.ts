@@ -1,9 +1,9 @@
 import {Request, Response} from 'express'
 import {createChirp, deleteChirp, getChirpById, getChirps} from "../db/queries/chirps.js";
 import {BadRequestError, ForbiddenError} from "./error-classes.js";
-import {getBearerToken, validateJWT} from "./auth.js";
+import {getBearerToken, validateJWT} from "../auth.js";
 
-function censorProfanity(body: string) {
+export function censorProfanity(body: string) {
     const profaneWords = ["kerfuffle", "sharbert", "fornax"]
     const bodyArray = body.split(" ")
 
@@ -31,7 +31,9 @@ export async function createChirpHandler(req: Request, res: Response) {
 }
 
 export async function getAllChirpsHandler(req: Request, res: Response) {
-    const chirps = await getChirps()
+    const authorId = typeof req.query.authorId === "string" ? req.query.authorId : undefined
+    const sort = typeof req.query.sort === "string" ? req.query.sort : undefined
+    const chirps = await getChirps(authorId,sort)
     res.status(200).send(chirps)
 }
 

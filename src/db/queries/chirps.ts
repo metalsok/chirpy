@@ -1,6 +1,6 @@
 import {db} from "../index.js";
-import {chirps, NewChirp, users} from "../schema.js";
-import {asc, eq} from 'drizzle-orm';
+import {chirps, NewChirp} from "../schema.js";
+import {asc, desc, eq} from 'drizzle-orm';
 import {NotFoundError} from "../../api/error-classes.js";
 
 export async function createChirp(chirp: NewChirp) {
@@ -12,8 +12,10 @@ export async function createChirp(chirp: NewChirp) {
     return result;
 }
 
-export async function getChirps() {
-    return db.select().from(chirps).orderBy(asc(chirps.createdAt))
+export async function getChirps(authorId?: string, sort = "asc") {
+    return db.select().from(chirps)
+        .where(authorId ? eq(chirps.userId, authorId) : undefined)
+        .orderBy(sort === "asc" ? asc(chirps.createdAt) : desc(chirps.createdAt))
 }
 
 export async function getChirpById(id: string) {
