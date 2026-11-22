@@ -1,6 +1,6 @@
 import type {NextFunction, Request, Response} from 'express';
 import {config} from './config.js';
-import {BadRequestError, NotFoundError, UnauthorizedError} from './api/error-classes.js';
+import {BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError} from './api/error-classes.js';
 
 export const middlewareLogResponses = (req: Request, res: Response, next: NextFunction) => {
     const {method, url} = req
@@ -27,6 +27,12 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
     }
     if (err instanceof NotFoundError) {
         res.status(404).json({
+            "error": err.message
+        })
+        return
+    }
+    if (err instanceof ForbiddenError) {
+        res.status(403).json({
             "error": err.message
         })
         return

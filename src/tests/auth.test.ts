@@ -20,7 +20,7 @@ describe("Password Hashing", () => {
     });
 
     it("should sign a jwt", () => {
-        token = makeJWT("1", 1000, "test")
+        token = makeJWT("1", "test")
         expect(token).toBeDefined()
     })
     it("should validate a jwt token", () => {

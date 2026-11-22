@@ -1,8 +1,7 @@
 import {Request, Response} from 'express'
-import {createChirp, getChirp, getChirps} from "../db/queries/chirps.js";
-import {BadRequestError} from "./error-classes.js";
+import {createChirp, deleteChirp, getChirpById, getChirps} from "../db/queries/chirps.js";
+import {BadRequestError, ForbiddenError} from "./error-classes.js";
 import {getBearerToken, validateJWT} from "./auth.js";
-import {config} from "../config.js";
 
 function censorProfanity(body: string) {
     const profaneWords = ["kerfuffle", "sharbert", "fornax"]
@@ -38,6 +37,21 @@ export async function getAllChirpsHandler(req: Request, res: Response) {
 
 export async function getChirpHandler(req: Request<{ id: string }>, res: Response) {
     const {id} = req.params
-    const chirp = await getChirp(id)
+    const chirp = await getChirpById(id)
     res.status(200).send(chirp)
+}
+
+export async function deleteChirpHandler(req: Request<{ id: string }>, res: Response) {
+    const {id} = req.params
+
+    const chirp = await getChirpById(id)
+    const token = getBearerToken(req)
+    const userId = validateJWT(token)
+    if (userId !== chirp.userId) {
+        throw new ForbiddenError("You are not allowed to do that")
+    }
+
+
+    await deleteChirp(req.params.id)
+    res.status(204).send({deleted: true})
 }

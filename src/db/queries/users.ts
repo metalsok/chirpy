@@ -29,3 +29,16 @@ export async function getUser(email: string) {
     }
     return user
 }
+
+export async function updateUser(userId: string, email: string, password: string) {
+    const [user] = await db.update(users).set({email, password}).where(eq(users.id, userId)).returning()
+    return user
+}
+
+export async function getUserById(userId: string) {
+    const [user] = await db.select().from(users).where(eq(users.id, userId))
+    if (!user) {
+        throw new UnauthorizedError("Incorrect email or password")
+    }
+    return user
+}

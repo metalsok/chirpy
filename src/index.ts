@@ -7,8 +7,9 @@ import {config} from "./config.js";
 import postgres from "postgres";
 import {migrate} from "drizzle-orm/postgres-js/migrator";
 import {drizzle} from "drizzle-orm/postgres-js";
-import {createUserHandler, getAllUsersHandler, loginUserHandler} from "./api/users.js";
-import {createChirpHandler, getAllChirpsHandler, getChirpHandler} from "./api/chirps.js";
+import {createUserHandler, getAllUsersHandler, loginUserHandler, updateUserHandler} from "./api/users.js";
+import {createChirpHandler, deleteChirpHandler, getAllChirpsHandler, getChirpHandler} from "./api/chirps.js";
+import {refreshTokenHandler, revokeTokenHandler} from "./api/auth.js";
 
 const app = express()
 const port = 8080
@@ -26,8 +27,12 @@ app.post('/admin/reset', handlerReset)
 app.get('/admin/metrics', handlerMetrics)
 app.get('/api/users', getAllUsersHandler)
 app.post('/api/users', createUserHandler)
+app.put('/api/users', updateUserHandler)
 app.post('/api/login', loginUserHandler)
+app.post('/api/refresh', refreshTokenHandler)
+app.post('/api/revoke', revokeTokenHandler)
 app.post('/api/chirps', createChirpHandler)
+app.delete('/api/chirps/:id', deleteChirpHandler)
 app.get('/api/chirps', getAllChirpsHandler)
 app.get('/api/chirps/:id', getChirpHandler)
 
