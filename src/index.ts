@@ -7,7 +7,13 @@ import {config} from "./config.js";
 import postgres from "postgres";
 import {migrate} from "drizzle-orm/postgres-js/migrator";
 import {drizzle} from "drizzle-orm/postgres-js";
-import {createUserHandler, getAllUsersHandler, loginUserHandler, updateUserHandler} from "./api/users.js";
+import {
+    createUserHandler,
+    getAllUsersHandler,
+    loginUserHandler,
+    setChirpyToRed,
+    updateUserHandler
+} from "./api/users.js";
 import {createChirpHandler, deleteChirpHandler, getAllChirpsHandler, getChirpHandler} from "./api/chirps.js";
 import {refreshTokenHandler, revokeTokenHandler} from "./api/auth.js";
 
@@ -35,6 +41,7 @@ app.post('/api/chirps', createChirpHandler)
 app.delete('/api/chirps/:id', deleteChirpHandler)
 app.get('/api/chirps', getAllChirpsHandler)
 app.get('/api/chirps/:id', getChirpHandler)
+app.post('/api/polka/webhooks', setChirpyToRed)
 
 app.use(errorHandler);
 

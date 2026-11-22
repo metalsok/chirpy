@@ -1,5 +1,5 @@
 import {Request, Response} from 'express'
-import {createUser, getUser, getUsers, updateUser} from "../db/queries/users.js";
+import {createUser, getUser, getUsers, setUserRed, updateUser} from "../db/queries/users.js";
 import {checkPasswordHash, getBearerToken, hashPassword, makeJWT, makeRefreshToken, validateJWT} from "./auth.js";
 import {UnauthorizedError} from "./error-classes.js";
 import {createRefreshToken} from "../db/queries/auth.js";
@@ -43,6 +43,16 @@ export const getAllUsersHandler = async (req: Request, res: Response) => {
     const users = await getUsers()
     res.status(200).send(users)
 }
+export const setChirpyToRed = async (req: Request, res: Response) => {
+    console.log(req.body)
+    const {event, data} = req.body
+    if (event !== "user.upgraded") {
+        res.status(204).send()
+        return;
+    }
+    await setUserRed(data.userId)
+    return res.status(204).send()
+}
 
 export const getUserHandler = async (req: Request, res: Response) => {
     const {email} = req.body
@@ -50,3 +60,4 @@ export const getUserHandler = async (req: Request, res: Response) => {
     const {password: _password, ...userResponse} = user
     res.status(200).send(userResponse)
 }
+

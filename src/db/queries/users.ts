@@ -1,5 +1,5 @@
 import {db} from "../index.js";
-import {NewUser, users} from "../schema.js";
+import {chirps, NewUser, users} from "../schema.js";
 import {eq, getTableColumns} from "drizzle-orm";
 import {UnauthorizedError} from "../../api/error-classes.js";
 
@@ -41,4 +41,12 @@ export async function getUserById(userId: string) {
         throw new UnauthorizedError("Incorrect email or password")
     }
     return user
+}
+
+export async function setUserRed(id: string) {
+    console.log(id)
+    await db.update(users).set({
+        isChirpyRed: true
+    }).where(eq(users.id, id)).returning()
+
 }

@@ -1,5 +1,5 @@
 import {db} from "../index.js";
-import {chirps, NewChirp} from "../schema.js";
+import {chirps, NewChirp, users} from "../schema.js";
 import {asc, eq} from 'drizzle-orm';
 import {NotFoundError} from "../../api/error-classes.js";
 
@@ -27,3 +27,4 @@ export async function getChirpById(id: string) {
 export async function deleteChirp(id: string) {
     await db.delete(chirps).where(eq(chirps.id, id))
 }
+
